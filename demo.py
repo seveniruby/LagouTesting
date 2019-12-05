@@ -75,3 +75,10 @@ for k,v in element_dict.items():
     print("each")
     print(k)
     print(v)
+
+i = 1
+while i < 6:
+    print(i)
+    i += 1
+
+
