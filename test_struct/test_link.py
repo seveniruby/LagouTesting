@@ -14,7 +14,7 @@ class LinkNode:
     def travel(self):
         item = self
         while item is not None:
-            print(item.data)
+            yield item
             item = item.next
 
     def search(self, data):
@@ -40,6 +40,19 @@ class LinkNode:
         node = LinkNode(data)
         node.next = item.next
         item.next = node
+
+    def order(self, data):
+        pre = self
+        for item in self.travel():
+            if data < item.data:
+                break
+            pre = item
+
+        node_new = LinkNode(data)
+        node_new.next = pre.next
+        pre.next = node_new
+
+        return self
 
 
 class TestLinkNode:
@@ -68,3 +81,16 @@ class TestLinkNode:
         self.link.insert(3, 2.5)
         self.link.travel()
         print(self.link.search(2.5))
+
+    def test_order(self):
+        self.link = LinkNode(1)
+        self.link.order(5).order(3).order(2).order(4)
+        link_data = [item.data for item in self.link.travel()]
+        print(link_data)
+        assert link_data == [1, 2, 3, 4, 5]
+
+        self.link.append(7).append(6)
+        link_data = [item.data for item in self.link.travel()]
+        print(link_data)
+        assert link_data != sorted(link_data)
+

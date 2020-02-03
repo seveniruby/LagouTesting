@@ -1,3 +1,6 @@
+from test_struct.test_stack import Stack
+
+
 class BTree:
     def __init__(self, data=None):
         self.data = data
@@ -54,3 +57,88 @@ class TestBTee:
         self.tree.right.right.left.left = BTree(8)
         assert self.tree.max_depth(self.tree, 0) == 5
         assert self.tree.get_max_depth() == 5
+
+
+class Tree:
+    def __init__(self, data=None):
+        self.data = data
+        self.children = []
+
+    def travel(self, current=None, depth=1):
+        if current is None:
+            current = self
+        yield current, depth
+
+        depth += 1
+        for child in current.children:
+            yield from self.travel(child, depth)
+        depth -= 1
+
+    def create(self, content: str):
+        stack = Stack()
+        key = ""
+        current = None
+        parent = None
+        root = self
+
+        for c in content:
+            if c is "<":
+                key = ""
+            elif c is ">":
+
+                if "/" in key:
+                    stack.pop()
+                    current = stack.top()
+                else:
+                    sub_tree = Tree(key)
+                    if current:
+                        current.children.append(sub_tree)
+                    else:
+                        root = sub_tree
+                    current = sub_tree
+                    stack.push(current)
+            else:
+                key += c
+
+        return root
+
+    def path(self, data):
+        stack = Stack()
+        for sub_tree, depth in self.travel():
+            while depth <= stack.get_size():
+                stack.pop()
+            stack.push(sub_tree)
+
+            if data == sub_tree.data:
+                return "".join([item.data for item in stack.travel()])
+
+
+class TestTree:
+    def test_travel_new(self):
+        tree = Tree("a")
+        tree.children.append(Tree("b"))
+        tree.children.append(Tree("c"))
+        print([f"{item.data} {depth}" for item, depth in tree.travel()])
+
+    def test_path(self):
+        xml = """
+        <a>
+          <b>
+            <c></c>
+            <d></d>
+          </b>
+          <f>
+            <e></e>
+          </f>
+          <m><n><x><y></y></x></n></m>
+        </a>
+        """
+
+        tree = Tree()
+        tree = tree.create(xml)
+        print([f"{item.data} {depth}" for item, depth in tree.travel()])
+
+        assert tree.path("a") == "a"
+        assert tree.path("b") == "ab"
+        assert tree.path("d") == "abd"
+        assert tree.path("y") == "amnxy"
