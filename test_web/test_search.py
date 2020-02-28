@@ -19,6 +19,7 @@ class TestSearch():
         self.vars = {}
 
     def teardown_method(self, method):
+        time.sleep(5)
         self.driver.quit()
 
     def test_search(self):
@@ -32,6 +33,20 @@ class TestSearch():
 
         self.driver.find_element(By.NAME, "q").click()
         self.driver.find_element(By.NAME, "q").send_keys("appium")
+        self.driver.find_element_by_name("q")
+        element = (By.NAME, "q")
+        self.driver.find_element(element)
+
         self.driver.find_element(By.NAME, "q").send_keys(Keys.ENTER)
         # 不推荐
         time.sleep(5)
+
+    def test_testingstudio(self):
+        self.driver.get("https://testing-studio.com/")
+        self.driver.find_element(By.CSS_SELECTOR, '#search-button').click()
+        input_element=self.driver.find_element(By.CSS_SELECTOR, '#search-term')
+        input_element.send_keys("selenium")
+        input_element.send_keys(Keys.ENTER)
+        assert "Selenium" in self.driver.find_element(By.CSS_SELECTOR, '.topic-title').text
+
+
