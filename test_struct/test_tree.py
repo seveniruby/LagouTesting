@@ -1,144 +1,103 @@
 from test_struct.test_stack import Stack
 
 
-class BTree:
-    def __init__(self, data=None):
-        self.data = data
-        self.left = None
-        self.right = None
-        # self.children=[]
-
-    def travel_subtree(self, subtree):
-        if subtree is None:
-            return
-
-        self.travel_subtree(subtree.left)
-        print(subtree.data)
-        self.travel_subtree(subtree.right)
-
-    def travel(self):
-        return self.travel_subtree(self)
-
-    def max_depth(self, subtree, depth):
-        if subtree is None:
-            return depth
-
-        max_left = self.max_depth(subtree.left, depth + 1)
-        max_right = self.max_depth(subtree.right, depth + 1)
-        return max_left if max_left > max_right else max_right
-
-    def get_max_depth(self):
-        return self.max_depth(self, 0)
-
-
-class TestBTee:
-    """
-    0
-    1 2
-    3 4 | 5 6
-    none none | none none | none none | 7 none
-    """
-
-    def setup(self):
-        self.tree = BTree(0)
-        self.tree.left = BTree(1)
-        self.tree.right = BTree(2)
-        self.tree.left.left = BTree(3)
-        self.tree.left.right = BTree(4)
-        self.tree.right.left = BTree(5)
-        self.tree.right.right = BTree(6)
-        self.tree.right.right.left = BTree(7)
-
-    def test_travel(self):
-        self.tree.travel()
-
-    def test_max_depth(self):
-        assert self.tree.max_depth(self.tree, 0) == 4
-        self.tree.right.right.left.left = BTree(8)
-        assert self.tree.max_depth(self.tree, 0) == 5
-        assert self.tree.get_max_depth() == 5
-
-
 class Tree:
-    def __init__(self, data=None):
+    def __init__(self, data):
         self.data = data
         self.children = []
 
-    def travel(self, current=None, depth=1):
-        if current is None:
-            current = self
-        yield current, depth
-
+    def travel(self, node=None, depth=1):
+        # 第一步递归改造
+        # 第二步改造增加默认参数
+        # 第三步改造增加depth
+        # 第四步改造使用生成器
+        if node is None:
+            node = self
+        yield node.data, depth
         depth += 1
-        for child in current.children:
+        for child in node.children:
             yield from self.travel(child, depth)
         depth -= 1
 
-    def create(self, content: str):
-        stack = Stack()
-        key = ""
-        current = None
-        parent = None
-        root = self
-
+    @staticmethod
+    def create_from_string(content) -> 'Tree':
+        #第一步编写基本的字符串处理逻辑框架
+        #第二步创建节点
+        #第三步使用stack记录tree的当前节点
+        key=""
+        root:Tree=None
+        stack=Stack()
         for c in content:
             if c is "<":
-                key = ""
+                key=""
             elif c is ">":
-
                 if "/" in key:
+                    #节点结束
                     stack.pop()
-                    current = stack.top()
                 else:
-                    sub_tree = Tree(key)
-                    if current:
-                        current.children.append(sub_tree)
+                    #新节点
+                    tree=Tree(key)
+                    if root is None:
+                        root=tree
                     else:
-                        root = sub_tree
-                    current = sub_tree
-                    stack.push(current)
+                        stack.top().children.append(tree)
+                    stack.push(tree)
             else:
-                key += c
-
+                key+=c
         return root
 
-    def path(self, data):
-        stack = Stack()
-        for sub_tree, depth in self.travel():
-            while depth <= stack.get_size():
-                stack.pop()
-            stack.push(sub_tree)
-
-            if data == sub_tree.data:
-                return "".join([item.data for item in stack.travel()])
 
 
 class TestTree:
-    def test_travel_new(self):
-        tree = Tree("a")
-        tree.children.append(Tree("b"))
-        tree.children.append(Tree("c"))
-        print([f"{item.data} {depth}" for item, depth in tree.travel()])
+    def test_create_tree(self):
+        root = Tree("html")
+        head = Tree("head")
+        a = Tree("a")
+        b = Tree("b")
+        head.children.append(a)
+        head.children.append(b)
+        body = Tree("body")
+        x = Tree("x")
+        m = Tree("m")
+        m.children.append(x)
+        body.children.append(m)
+        root.children.append(head)
+        root.children.append(body)
+        print()
+        tree_dict = {}
+        for node, depth in root.travel():
+            print(f"{'  ' * depth}{node} depth={depth}")
+            tree_dict[node] = depth
 
-    def test_path(self):
+        assert tree_dict["x"] == 4
+        assert tree_dict["b"] == 3
+        assert tree_dict["body"] == 2
+        assert tree_dict["html"] == 1
+
+    def test_create_tree_from_string(self):
         xml = """
-        <a>
-          <b>
-            <c></c>
-            <d></d>
-          </b>
-          <f>
-            <e></e>
-          </f>
-          <m><n><x><y></y></x></n></m>
-        </a>
+        <html>
+            <head>
+                <c></c>
+                <d></d>
+            </head>
+            <body>
+                <m>
+                    <x></x>
+                </m>
+            </body>
+        </html>
         """
 
-        tree = Tree()
-        tree = tree.create(xml)
-        print([f"{item.data} {depth}" for item, depth in tree.travel()])
-
-        assert tree.path("a") == "a"
-        assert tree.path("b") == "ab"
-        assert tree.path("d") == "abd"
-        assert tree.path("y") == "amnxy"
+        root = Tree.create_from_string(xml)
+        tree_dict = {}
+        print()
+        for data, depth in root.travel():
+            tree_dict[data] = depth
+            print(f"{'  ' * depth}{data} depth={depth}")
+        assert tree_dict["html"] == 1
+        assert tree_dict["head"] == 2
+        assert tree_dict["body"] == 2
+        assert tree_dict["d"] == 3
+        assert tree_dict["m"] == 3
+        assert tree_dict["x"] == 4

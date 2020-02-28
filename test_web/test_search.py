@@ -10,32 +10,28 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
+
 class TestSearch():
-  def setup_method(self, method):
-    self.driver = webdriver.Chrome()
-    self.driver.implicitly_wait(5)
-    self.wait = WebDriverWait(self.driver, 30)
-    self.vars = {}
-  
-  def teardown_method(self, method):
-    self.driver.quit()
-  
-  def test_search(self):
-    self.driver.get("https://testerhome.com/")
-    # self.wait.until(lambda x: "title" in self.driver.page_source)
-    self.driver.set_window_size(1399, 877)
-    element = (By.NAME, "q")
-    # self.wait.until(expected_conditions.presence_of_element_located(element))
-    # self.wait.until(expected_conditions.visibility_of_element_located(element))
-    self.wait.until(expected_conditions.element_to_be_clickable(element))
+    def setup_method(self, method):
+        self.driver = webdriver.Chrome()
+        self.driver.implicitly_wait(5)
+        self.wait = WebDriverWait(self.driver, 30)
+        self.vars = {}
 
-    self.driver.find_element(By.NAME, "q").click()
-    self.driver.find_element(By.NAME, "q").send_keys("appium")
-    self.driver.find_element(By.NAME, "q").send_keys(Keys.ENTER)
-    #不推荐
-    time.sleep(5)
+    def teardown_method(self, method):
+        self.driver.quit()
 
+    def test_search(self):
+        self.driver.get("https://testerhome.com/")
+        # self.wait.until(lambda x: "title" in self.driver.page_source)
+        self.driver.set_window_size(1399, 877)
+        element = (By.NAME, "q")
+        # self.wait.until(expected_conditions.presence_of_element_located(element))
+        # self.wait.until(expected_conditions.visibility_of_element_located(element))
+        self.wait.until(expected_conditions.element_to_be_clickable(element))
 
-
-
-  
+        self.driver.find_element(By.NAME, "q").click()
+        self.driver.find_element(By.NAME, "q").send_keys("appium")
+        self.driver.find_element(By.NAME, "q").send_keys(Keys.ENTER)
+        # 不推荐
+        time.sleep(5)
