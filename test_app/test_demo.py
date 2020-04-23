@@ -24,7 +24,7 @@ class TestDemo:
         }
 
         self.driver = webdriver.Remote("http://localhost:4723/wd/hub", caps)
-        self.driver.implicitly_wait(20)
+        self.implicitly_wait(20)
         self.wait = WebDriverWait(self.driver, 60)
 
         locator = ["同意", "image_cancel"]

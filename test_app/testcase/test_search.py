@@ -2,7 +2,6 @@ from test_app.page.main import MainPage
 
 
 class TestSearch:
-
     def setup(self):
         self.search_page = MainPage().search()
 

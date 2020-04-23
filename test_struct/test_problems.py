@@ -39,6 +39,7 @@ class TestStack:
 
     def test_pattern(self):
         assert self.stack.pattern("()") == True
+        assert self.stack.pattern("{X}") == True
         assert self.stack.pattern("([])") == True
         assert self.stack.pattern("([{[]}{}])") == True
         assert self.stack.pattern("([)") == False

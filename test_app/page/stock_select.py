@@ -10,11 +10,11 @@ class StockSelect(BasePage):
     def clear_all(self):
         all = (By.XPATH, "//*[contains(@resource-id, 'indicator')]//*[@text='全部']")
         #显式等待封装
-        self.wait(all)
+        self.wait(all, timeout=30)
         self.click(By.ID, 'edit_group')
         if len(self.find_elements(By.ID, "stockName")) > 0:
             self.click(By.XPATH, "//*[@text='全选']")
-            self.click(By.XPATH, "//*[@text='取消关注']")
+            self.click(By.XPATH, "//*[@text='删除自选']")
             confirm_buttons = self.find_elements(By.XPATH, "//*[@text='确定']")
             if len(confirm_buttons) > 0:
                 confirm_buttons[0].click()

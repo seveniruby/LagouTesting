@@ -19,15 +19,26 @@ def exception_handle(fun):
             if instance._retry > instance._retry_max:
                 raise e
 
-            instance.driver.implicitly_wait(0)
+            instance.implicitly_wait(0)
+
             for e in instance._black_list:
                 logging.warning(e)
+                # 保存原来的上下文
+                if instance.driver.context != "NATIVE_APP":
+                    instance.save_context()
+                    instance.driver.switch_to.context("NATIVE_APP")
+
                 elements = instance.driver.find_elements(*e)
                 if len(elements) > 0:
                     elements[0].click()
-                    instance.driver.implicitly_wait(10)
+                    instance.implicitly_wait()
+
+                    # 切换回原来的context
+                    instance.restore_context()
                     return magic(*args, **kwargs)
-            instance.driver.implicitly_wait(10)
+
+                instance.restore_context()
+            instance.implicitly_wait()
             return magic(*args, **kwargs)
 
     return magic
@@ -40,8 +51,11 @@ class BasePage:
         (By.ID, 'tv_agree'),
         (By.XPATH, "//*[@text='下次再说']")
     ]
+    _current_context = "NATIVE_APP"
     _retry_max = 1
     _retry = 0
+    _default_implicitly_wait_seconds=6
+    _default_explicit_wait_seconds = 10
 
     def __init__(self, driver=None):
         self.driver: WebDriver = driver
@@ -57,8 +71,24 @@ class BasePage:
     def click(self, by, value):
         self.driver.find_element(by, value).click()
 
+    def implicitly_wait(self, seconds=_default_implicitly_wait_seconds):
+        self.driver.implicitly_wait(seconds)
+
+    def save_context(self):
+        self._current_context = self.driver.context
+        if "WEBVIEW" in self._current_context:
+            self._current_window = self.driver.current_window_handle
+
+    def restore_context(self):
+        if self._current_context != self.driver.context:
+            self.driver.switch_to.context(self._current_context)
+
+        if "WEBVIEW" in self._current_context:
+            self.driver.switch_to.window(self._current_window)
+            logging.info(self.driver.page_source)
+
     @exception_handle
-    def wait(self, locator, timeout=20):
+    def wait(self, locator, timeout=_default_explicit_wait_seconds):
         wait = WebDriverWait(self.driver, timeout)
         if isinstance(locator, tuple):
             wait.until(
@@ -72,5 +102,9 @@ class BasePage:
                 return any(map(lambda x: x in source, locator))
 
             wait.until(wait_list)
+        elif isinstance(locator, object):
+            logging.info(f"expection_conditions {locator}")
+            wait.until(locator)
         else:
             logging.warning(f"don't know how to deal with {locator}")
+
