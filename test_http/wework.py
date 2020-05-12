@@ -33,7 +33,7 @@ class WeWork:
                 'access_token': self.token
             },
             json={
-                "group_id": "etQKd-CgAAiicdm3Ew0TWxCkRNNDc7Wg",
+                "group_name": "测试专用",
                 'tag': [
                     {
                         'name': name
