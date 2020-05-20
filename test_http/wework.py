@@ -1,6 +1,7 @@
 import json
 
 import requests
+from requests import Response, PreparedRequest
 
 
 class WeWork:
@@ -13,7 +14,7 @@ class WeWork:
             }
         )
         self.token = r.json()['access_token']
-        self.format(r.json())
+        self.format(r)
         return r
 
     def tag_list(self):
@@ -24,8 +25,9 @@ class WeWork:
             }
         )
 
-        self.format(r.json())
+        self.format(r)
         return r
+
     def tag_add(self, name):
         r = requests.post(
             'https://qyapi.weixin.qq.com/cgi-bin/externalcontact/add_corp_tag',
@@ -41,7 +43,8 @@ class WeWork:
                 ]
             }
         )
-        self.format(r.json())
+
+        self.format(r)
         return r
 
     def tag_delete(self, id):
@@ -54,9 +57,11 @@ class WeWork:
                 'tag_id': [id]
             }
         )
-        self.format(r.json())
+        self.format(r)
         return r
 
-    def format(self, data):
-        print(json.dumps(data, indent=2, ensure_ascii=False))
-
+    def format(self, res: Response):
+        req: PreparedRequest = res.request
+        print(req.url)
+        print(req.body)
+        print(json.dumps(res.json(), indent=2, ensure_ascii=False))
