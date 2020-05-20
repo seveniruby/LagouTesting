@@ -21,6 +21,11 @@ class TestWeWork:
             id = tag['id']
             r = cls.wework.tag_delete(id)
 
+        #bug： 企业微信后台使用了负载均衡，数据不同步。相同的groupname可能会出现多个tag group
+        cls.wework.tag_add("demo")
+
+
+
     def test_tag_list(self):
         r = self.wework.tag_list()
         assert r.json()['errcode'] == 0

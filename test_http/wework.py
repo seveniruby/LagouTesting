@@ -5,6 +5,8 @@ from requests import Response, PreparedRequest
 
 
 class WeWork:
+    def __init__(self):
+        self.group_id=None
     def get_token(self):
         r = requests.get(
             'https://qyapi.weixin.qq.com/cgi-bin/gettoken',
@@ -35,6 +37,7 @@ class WeWork:
                 'access_token': self.token
             },
             json={
+                "group_id": self.group_id,
                 "group_name": "测试专用",
                 'tag': [
                     {
@@ -45,6 +48,7 @@ class WeWork:
         )
 
         self.format(r)
+        self.group_id=r.json()['tag_group']['group_id']
         return r
 
     def tag_delete(self, id):
