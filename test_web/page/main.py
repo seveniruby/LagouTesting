@@ -12,7 +12,7 @@ class Main:
         self.driver.implicitly_wait(5)
         self.wait = WebDriverWait(self.driver, 30)
         self.vars = {}
-        self.driver.get("https://testing-studio.com/")
+        self.driver.get("https://home.testing-studio.com/")
 
     def search(self, keyword):
         self.driver.find_element(By.CSS_SELECTOR, '#search-button').click()

@@ -22,31 +22,12 @@ class TestSearch():
         time.sleep(5)
         self.driver.quit()
 
-    def test_search(self):
-        self.driver.get("https://testerhome.com/")
-        # self.wait.until(lambda x: "title" in self.driver.page_source)
-        self.driver.set_window_size(1399, 877)
-        element = (By.NAME, "q")
-        # self.wait.until(expected_conditions.presence_of_element_located(element))
-        # self.wait.until(expected_conditions.visibility_of_element_located(element))
-        self.wait.until(expected_conditions.element_to_be_clickable(element))
-
-        self.driver.find_element(By.NAME, "q").click()
-        self.driver.find_element(By.NAME, "q").send_keys("appium")
-        self.driver.find_element_by_name("q")
-        element = (By.NAME, "q")
-        self.driver.find_element(element)
-
-        self.driver.find_element(By.NAME, "q").send_keys(Keys.ENTER)
-        # 不推荐
-        time.sleep(5)
-
     def test_testingstudio(self):
-        self.driver.get("https://testing-studio.com/")
+        self.driver.get("https://home.testing-studio.com/")
         self.driver.find_element(By.CSS_SELECTOR, '#search-button').click()
         input_element=self.driver.find_element(By.CSS_SELECTOR, '#search-term')
         input_element.send_keys("selenium")
         input_element.send_keys(Keys.ENTER)
-        assert "Selenium" in self.driver.find_element(By.CSS_SELECTOR, '.topic-title').text
-
-
+        actual=self.driver.find_element(By.CSS_SELECTOR, '.topic-title').text
+        print(actual)
+        assert "Selenium".lower() in actual
