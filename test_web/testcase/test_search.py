@@ -5,7 +5,8 @@ from test_web.page.main import Main
 
 class TestSearch:
     def setup_class(self):
-        self.search_page = Main().search("selenium")
+        self.main=Main()
+        self.search_page = self.main.search("selenium")
 
     @pytest.mark.parametrize("name", ["Wayyt", "seveniruby", "Hogwarts-Ashin"])
     def test_search(self, name):
@@ -13,3 +14,6 @@ class TestSearch:
         assert len(authors) > 0
         for result in authors:
             assert result == name
+
+    def teardown_class(self):
+        self.main.quit()

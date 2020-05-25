@@ -19,7 +19,7 @@ class TestSearch():
         self.vars = {}
 
     def teardown_method(self, method):
-        time.sleep(5)
+        # time.sleep(3)
         self.driver.quit()
 
     def test_testingstudio(self):

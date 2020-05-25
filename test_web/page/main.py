@@ -21,3 +21,5 @@ class Main:
         input_element.send_keys(Keys.ENTER)
 
         return Search(self.driver)
+    def quit(self):
+        self.driver.quit()
