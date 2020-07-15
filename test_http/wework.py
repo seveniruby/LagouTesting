@@ -15,8 +15,9 @@ class WeWork:
                 'corpsecret': 'heLiPlmyblHRiKAgGWZky4-KdWqu1V22FeoFex8RfM0'
             }
         )
-        self.token = r.json()['access_token']
         self.format(r)
+        self.token = r.json()['access_token']
+
         return r
 
     def tag_list(self):
